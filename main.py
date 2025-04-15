@@ -9,6 +9,10 @@ from openai import OpenAI
 from dotenv import load_dotenv
 import pytz
 import pandas as pd
+import tempfile
+import base64
+import json
+
 
 from aiogram import Bot, Dispatcher, types
 from aiogram.filters import CommandStart
@@ -32,11 +36,17 @@ if not FIREBASE_URL:
     raise ValueError("❌ FIREBASE_URL не найден! Проверь .env файл.")
 
 # ⚙️ Инициализация Firebase
-cred = credentials.Certificate("/Users/kainen/Desktop/davleniye/serviceAccountKey.json")
+firebase_key_b64 = os.getenv("FIREBASE_KEY_JSON_B64")
+firebase_key_json = json.loads(base64.b64decode(firebase_key_b64))
+
+with tempfile.NamedTemporaryFile(mode="w+", delete=False, suffix=".json") as temp_file:
+    json.dump(firebase_key_json, temp_file)
+    temp_file.flush()
+    cred = credentials.Certificate(temp_file.name)
+
 firebase_admin.initialize_app(cred, {
     'databaseURL': FIREBASE_URL
 })
-
 # ⚙️ Настройка логирования
 logging.basicConfig(level=logging.INFO)
 
