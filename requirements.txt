@@ -1,8 +1,6 @@
-aiogram==3.20.0
-openai
-python-dotenv
+aiogram==3.0.0
 firebase-admin
-pandas
-openpyxl
+openai
 pytz
-# Force rebuild to remove unused dependencies
+python-dotenv
+pandas
