@@ -22,6 +22,33 @@ from aiogram.fsm.state import State, StatesGroup
 from aiogram.fsm.storage.memory import MemoryStorage
 from aiogram.exceptions import TelegramForbiddenError, TelegramConflictError
 
+
+print("🔄 Запускается бот...")
+
+try:
+    firebase_key_b64 = os.getenv("FIREBASE_KEY_JSON_B64")
+    if not firebase_key_b64:
+        raise Exception("❌ FIREBASE_KEY_JSON_B64 переменная не найдена!")
+
+    firebase_key_json = json.loads(base64.b64decode(firebase_key_b64))
+
+    with tempfile.NamedTemporaryFile(mode="w+", delete=False, suffix=".json") as temp_file:
+        json.dump(firebase_key_json, temp_file)
+        temp_file.flush()
+        cred = credentials.Certificate(temp_file.name)
+
+    firebase_admin.initialize_app(cred, {
+        'databaseURL': FIREBASE_URL
+    })
+
+    print("✅ Firebase инициализирован")
+
+except Exception as e:
+    print(f"🔥 Ошибка при инициализации Firebase: {e}")
+    raise e
+
+
+
 # 🔒 Загрузка переменных окружения из .env
 load_dotenv()
 API_TOKEN = os.getenv("API_TOKEN")
